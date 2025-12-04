@@ -394,3 +394,8 @@ class AudioFeatureRecommender:
         
         logger.info(f"Model loaded from {path}")
         return model
+    
+# Add this at the bottom of your file to test:
+if __name__ == "__main__":
+    print("Content-based model script is running!")
+    # Add some test code here
