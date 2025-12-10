@@ -16,13 +16,23 @@ from pathlib import Path
 import pandas as pd
 import time
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent))
+# Add project root and src to path
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / "src"))
 
-from src.data.data_loader import MusicDataLoader
-from src.models.als_recommender import ALSRecommender
-from src.models.content_based_recommender import ContentBasedRecommender
-from src.models.ensemble_recommender import EnsembleRecommender
+# Import with try/except for better error handling
+try:
+    from src.data.data_loader import MusicDataLoader
+    from src.models.als_recommender import ALSRecommender
+    from src.models.content_based_recommender import ContentBasedRecommender
+    from src.models.ensemble_recommender import EnsembleRecommender
+except ImportError:
+    # Fallback: try importing directly
+    from data.data_loader import MusicDataLoader
+    from models.als_recommender import ALSRecommender
+    from models.content_based_recommender import ContentBasedRecommender
+    from models.ensemble_recommender import EnsembleRecommender
 
 # Page config
 st.set_page_config(
