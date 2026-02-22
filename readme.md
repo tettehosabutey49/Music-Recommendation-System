@@ -8,7 +8,32 @@ A production-grade music recommendation system combining collaborative filtering
 
 **🌐 Live Demo:** [Music Recommender on Streamlit](https://jkdmyefxdcigf3suf2axz3.streamlit.app/)  
 **💻 Source Code:** [GitHub Repository](https://github.com/tettehosabutey49/Music-Recommendation-System)  
-**📄 Technical Report:** [System Design Document](https://github.com/tettehosabutey49/Music-Recommendation-System/blob/master/Music_Recommendation_System_Technical_Report.docx)
+
+
+---
+
+## 🔄 Version History
+
+### **v1.2 (Current - February 2026)** ⭐
+**Major Features:**
+- ✅ **Search functionality** - Find songs by artist or title (no more scrolling through 10,000 songs!)
+- ✅ **Fixed duplicate recommendations** - Now shows diverse artists with varying similarity scores
+- ✅ **Improved feature variations** - Each song variation (Remix, Acoustic, Live, etc.) has unique audio features
+- ✅ **Better recommendation quality** - Filters out variations of the selected song for true diversity
+- ✅ **Enhanced UX** - Toggle between browse and search modes
+
+**Technical Improvements:**
+- Updated content-based filtering to generate unique features for all 10K songs
+- Added title-based filtering to prevent showing multiple versions of same song
+- Implemented search with partial matching on artist and title
+- Optimized similarity calculations for faster inference
+
+### **v1.0 (Initial Release - January 2026)**
+- ✅ Core recommendation engine (NMF + Content-based + Ensemble)
+- ✅ 10,000 real songs from popular artists
+- ✅ <100ms inference latency
+- ✅ Cold-start solution with adaptive weighting
+- ✅ Streamlit deployment
 
 ---
 
@@ -29,7 +54,7 @@ The live demo uses **synthetic data** for the following reasons:
 **What the demo includes:**
 - ✅ 10,000 mock songs with realistic metadata (titles, artists, genres)
 - ✅ All ML algorithms working (NMF collaborative filtering, content-based, ensemble)
-- ✅ Full UI with 4 tabs (Recommendations, Similar Songs, User Profile, About)
+- ✅ Full UI with search functionality and 3 tabs
 - ✅ <100ms inference demonstrations
 - ✅ System metrics (500 users, 10K songs, 98% sparsity)
 - ✅ Professional Spotify-style interface
@@ -40,16 +65,16 @@ When you clone this repository and follow the setup instructions, you get the **
 
 **Real Data Includes:**
 - ✅ **10,000 actual songs** from real artists:
-  - Pop: The Weeknd, Taylor Swift, Harry Styles, Ed Sheeran, Dua Lipa
-  - Rock: Queen, The Killers, Nirvana, Guns N' Roses
-  - Hip-Hop: Eminem, Drake, Travis Scott, Kendrick Lamar
-  - R&B: SZA, Childish Gambino
-  - Electronic: Avicii, David Guetta, Martin Garrix
-  - Jazz: Etta James, Nina Simone
-  - Metal: Metallica, AC/DC
-  - Country: Dolly Parton, Chris Stapleton
-  - Latin: Luis Fonsi, J Balvin
-  - Indie: Twenty One Pilots, Foster the People
+  - Pop: The Weeknd, Taylor Swift, Harry Styles, Ed Sheeran, Dua Lipa, Miley Cyrus
+  - Hip-Hop: Travis Scott, Drake, Gunna, Eminem, Kendrick Lamar, Future, Post Malone, Playboi Carti
+  - Rock: Queen, The Killers, Nirvana, Guns N' Roses, Journey
+  - R&B: SZA, The Weeknd, Childish Gambino
+  - Electronic: Avicii, David Guetta, Martin Garrix, Zedd
+  - Jazz: Etta James, Nina Simone, Ella Fitzgerald
+  - Metal: Metallica, AC/DC, System of a Down
+  - Country: Dolly Parton, Chris Stapleton, Maren Morris
+  - Latin: Luis Fonsi, J Balvin, Karol G
+  - Indie: Twenty One Pilots, Foster the People, MGMT
 
 - ✅ **Real audio features:** Energy, tempo, valence, danceability for each song
 - ✅ **SQLite database:** ~250MB with actual song catalog
@@ -63,22 +88,25 @@ When you clone this repository and follow the setup instructions, you get the **
 git clone https://github.com/tettehosabutey49/Music-Recommendation-System.git
 cd Music-Recommendation-System
 
-# 2. Create virtual environment
+# 2. Check out v1.2 (latest version with search feature)
+git checkout v1.2
+
+# 3. Create virtual environment
 python3 -m venv mrsenv
 source mrsenv/bin/activate  # Windows: mrsenv\Scripts\activate
 
-# 3. Install dependencies
+# 4. Install dependencies
 pip install -r requirements.txt
 
-# 4. Generate real music data (~12 minutes)
+# 5. Generate real music data (~12 minutes)
 python fetch_real_music_data.py
 # Choose Option 2 (curated sample)
 # Enter 500 users (or press Enter for default)
 
-# 5. Train models (~5 minutes)
+# 6. Train models (~5 minutes)
 python train.py
 
-# 6. Run the app
+# 7. Run the app
 streamlit run app.py
 # Opens at http://localhost:8501
 ```
@@ -88,6 +116,8 @@ streamlit run app.py
 - Authentic listening patterns
 - Full database functionality
 - All trained models loaded
+- **Search functionality** - Find any song by artist or title
+- **Diverse recommendations** - Get similar songs from different artists
 
 ---
 
@@ -105,9 +135,11 @@ Ensemble recommendation system serving personalized music recommendations in <10
 ## Key Features
 
 ✅ **Real Music Dataset**: 10,000 songs from The Weeknd, Queen, Eminem, Taylor Swift, Drake, and more across 10 genres (production version)  
+✅ **Smart Search**: Find songs by artist or title instantly (v1.2)  
+✅ **Diverse Recommendations**: Shows different artists with varying similarity scores (v1.2)  
 ✅ **Sub-100ms Latency**: Sparse matrices + pre-computed embeddings for real-time inference  
 ✅ **Cold-Start Solution**: Multi-tier fallback ensures 100% user coverage from day 1  
-✅ **Production Ready**: Docker, FastAPI, Streamlit deployment with proper caching  
+✅ **Production Ready**: Streamlit deployment with proper caching  
 ✅ **Zero-Cost MVP**: SQLite + in-memory serving, scales to PostgreSQL + Redis when needed  
 ✅ **Live Demo**: Streamlit Cloud deployment for instant testing  
 
@@ -269,9 +301,25 @@ alpha_H = 0.01         # Item regularization
 5. **Cost Optimization**: $0 infrastructure during MVP with clear path to $50-100/month at scale
 6. **Real-Time Performance**: <100ms through sparse matrices and pre-computation
 7. **Production Thinking**: Not just models, but systems that ship and scale
+8. **User Experience**: Search functionality for 10K+ song catalogs (v1.2)
+
+## What's New in v1.2
+
+### Search Functionality
+Users can now search for songs by artist or title instead of scrolling through 10,000 songs. Simply type "Travis Scott" or "Gunna" and get instant results.
+
+### Improved Recommendation Diversity
+Fixed the duplicate recommendation issue where variations of the same song would dominate results. Now shows diverse artists with varying similarity scores (e.g., searching Travis Scott returns Gunna, Future, Playboi Carti - not just Travis Scott variations).
+
+### Better Feature Engineering
+Each song variation (Remix, Acoustic, Live, Extended Mix, Instrumental) now has truly unique audio features, ensuring diverse recommendations across the catalog.
+
+### Enhanced UX
+Toggle between browsing from a curated list or searching by name. Results show similarity scores so users understand why songs are recommended.
 
 ## Future Improvements
 
+- [ ] Airflow pipeline for automated daily updates (coming this week!)
 - [ ] A/B testing framework
 - [ ] Explicit feedback (likes/dislikes)
 - [ ] User onboarding flow
