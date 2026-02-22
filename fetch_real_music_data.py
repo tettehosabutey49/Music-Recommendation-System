@@ -125,6 +125,8 @@ class RealMusicDataFetcher:
             ("Flowers", "Miley Cyrus", "pop", 2023, 200, 0.71, 0.69, 0.55, 96),
             ("cruel summer", "Taylor Swift", "pop", 2019, 178, 0.55, 0.70, 0.45, 170),
             ("Watermelon Sugar", "Harry Styles", "pop", 2019, 174, 0.54, 0.82, 0.96, 95),
+            ("pushin P", "Gunna", "hip-hop", 2022, 186, 0.68, 0.85, 0.42, 140),
+            ("fukumean", "Gunna", "hip-hop", 2023, 164, 0.74, 0.88, 0.39, 148),
         ]
         
         # Hip-hop/Rap
@@ -135,6 +137,10 @@ class RealMusicDataFetcher:
             ("HUMBLE.", "Kendrick Lamar", "hip-hop", 2017, 177, 0.71, 0.91, 0.42, 150),
             ("Sunflower", "Post Malone", "hip-hop", 2018, 158, 0.48, 0.76, 0.76, 90),
             ("Rockstar", "Post Malone", "hip-hop", 2017, 218, 0.59, 0.59, 0.14, 160),
+            ("goosebumps", "Travis Scott", "hip-hop", 2016, 243, 0.71, 0.84, 0.35, 130),
+            ("Highest in the Room", "Travis Scott", "hip-hop", 2019, 177, 0.59, 0.73, 0.23, 150),
+            ("Mask Off", "Future", "hip-hop", 2017, 204, 0.65, 0.83, 0.26, 150),
+            ("Sky", "Playboi Carti", "hip-hop", 2020, 193, 0.72, 0.80, 0.44, 145),
         ]
         
         # Rock
@@ -245,27 +251,46 @@ class RealMusicDataFetcher:
             # Create variation
             variation_type = i % 6  # 6 types of variations
             
+            # FIXED: Modify ALL features to create unique songs
             if variation_type == 0:
                 base_song['title'] = f"{base_song['title']} (Remix)"
-                base_song['energy'] = min(1.0, base_song['energy'] + np.random.uniform(0, 0.2))
-                base_song['tempo'] = base_song['tempo'] * np.random.uniform(0.95, 1.05)
+                base_song['energy'] = np.clip(base_song['energy'] + np.random.uniform(-0.15, 0.25), 0, 1)
+                base_song['tempo'] = base_song['tempo'] * np.random.uniform(0.85, 1.15)
+                base_song['valence'] = np.clip(base_song['valence'] + np.random.uniform(-0.2, 0.2), 0, 1)
+                base_song['danceability'] = np.clip(base_song['danceability'] + np.random.uniform(-0.1, 0.15), 0, 1)
             elif variation_type == 1:
                 base_song['title'] = f"{base_song['title']} (Acoustic)"
-                base_song['energy'] = max(0.0, base_song['energy'] - np.random.uniform(0.1, 0.3))
-                base_song['danceability'] = max(0.0, base_song['danceability'] - 0.2)
+                base_song['energy'] = np.clip(base_song['energy'] - np.random.uniform(0.1, 0.35), 0, 1)
+                base_song['danceability'] = np.clip(base_song['danceability'] - np.random.uniform(0.1, 0.3), 0, 1)
+                base_song['tempo'] = base_song['tempo'] * np.random.uniform(0.8, 0.95)
+                base_song['valence'] = np.clip(base_song['valence'] + np.random.uniform(-0.15, 0.1), 0, 1)
             elif variation_type == 2:
                 base_song['title'] = f"{base_song['title']} (Live)"
                 base_song['duration'] = int(base_song['duration'] * np.random.uniform(1.1, 1.3))
+                base_song['energy'] = np.clip(base_song['energy'] + np.random.uniform(0, 0.2), 0, 1)
+                base_song['valence'] = np.clip(base_song['valence'] + np.random.uniform(-0.1, 0.15), 0, 1)
+                base_song['tempo'] = base_song['tempo'] * np.random.uniform(0.95, 1.08)
+                base_song['danceability'] = np.clip(base_song['danceability'] + np.random.uniform(-0.1, 0.1), 0, 1)
             elif variation_type == 3:
                 base_song['title'] = f"{base_song['title']} (Radio Edit)"
                 base_song['duration'] = int(base_song['duration'] * np.random.uniform(0.8, 0.95))
+                base_song['energy'] = np.clip(base_song['energy'] + np.random.uniform(-0.15, 0.15), 0, 1)
+                base_song['tempo'] = base_song['tempo'] * np.random.uniform(0.92, 1.05)
+                base_song['valence'] = np.clip(base_song['valence'] + np.random.uniform(-0.12, 0.12), 0, 1)
+                base_song['danceability'] = np.clip(base_song['danceability'] + np.random.uniform(-0.08, 0.08), 0, 1)
             elif variation_type == 4:
                 base_song['title'] = f"{base_song['title']} (Extended Mix)"
                 base_song['duration'] = int(base_song['duration'] * np.random.uniform(1.2, 1.5))
-                base_song['energy'] = min(1.0, base_song['energy'] + 0.1)
+                base_song['energy'] = np.clip(base_song['energy'] + np.random.uniform(0, 0.25), 0, 1)
+                base_song['tempo'] = base_song['tempo'] * np.random.uniform(0.95, 1.1)
+                base_song['danceability'] = np.clip(base_song['danceability'] + np.random.uniform(0, 0.2), 0, 1)
+                base_song['valence'] = np.clip(base_song['valence'] + np.random.uniform(-0.15, 0.15), 0, 1)
             else:
                 base_song['title'] = f"{base_song['title']} (Instrumental)"
-                base_song['valence'] = base_song['valence'] * np.random.uniform(0.8, 1.0)
+                base_song['valence'] = np.clip(base_song['valence'] * np.random.uniform(0.7, 1.1), 0, 1)
+                base_song['energy'] = np.clip(base_song['energy'] + np.random.uniform(-0.1, 0.15), 0, 1)
+                base_song['tempo'] = base_song['tempo'] * np.random.uniform(0.9, 1.05)
+                base_song['danceability'] = np.clip(base_song['danceability'] + np.random.uniform(-0.12, 0.12), 0, 1)
             
             expanded_songs.append(base_song)
         
@@ -436,3 +461,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
