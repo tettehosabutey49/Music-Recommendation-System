@@ -14,7 +14,16 @@ A production-grade music recommendation system combining collaborative filtering
 
 ## 🔄 Version History
 
-### **v1.2 (Current - February 2026)** ⭐
+### **v1.3 (Current - February 2026)** ⭐
+**Airflow Automated Retraining Pipeline:**
+- ✅ **Airflow DAG** - Weekly automated retraining with 5-stage pipeline
+- ✅ **Data ingestion task** - Simulates pulling a week of new user events
+- ✅ **Data validation gate** - Blocks retraining if data thresholds aren't met
+- ✅ **Model freshness check** - Detects silent training failures
+- ✅ **Model versioning** - Timestamped archive with automatic pruning
+- ✅ **Docker Compose stack** - Full local Airflow environment (webserver + scheduler + PostgreSQL)
+
+### **v1.2 (February 2026)**
 **Major Features:**
 - ✅ **Search functionality** - Find songs by artist or title (no more scrolling through 10,000 songs!)
 - ✅ **Fixed duplicate recommendations** - Now shows diverse artists with varying similarity scores
@@ -181,6 +190,69 @@ Ensemble recommendation system serving personalized music recommendations in <10
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Automated Retraining Pipeline (Airflow)
+
+An Apache Airflow DAG automates the full retraining cycle on a **weekly schedule**, so the model stays current as new listening data accumulates.
+
+### Pipeline
+
+```
+[Every Sunday 00:00 UTC]
+
+  ingest_data
+      │  Pulls in new user listening events for the week.
+      │  (Generates synthetic interactions here; in production:
+      │   replace with your event source — S3, Kafka, REST API, etc.)
+      ▼
+  validate_data
+      │  Checks the database meets minimum thresholds
+      │  (songs ≥ 100, interactions ≥ 1,000) before wasting
+      │  compute on a bad dataset.
+      ▼
+  train_models
+      │  Runs train.py — retrains ALS collaborative filter,
+      │  content-based model, and ensemble.
+      ▼
+  evaluate_models
+      │  Verifies all model files were actually updated by
+      │  this run (catches silent failures where training
+      │  appeared to succeed but wrote nothing).
+      ▼
+  promote_models
+         Saves a timestamped backup of the new models to
+         models/archive/ (rollback safety net).
+         Keeps the last 5 snapshots, prunes older ones.
+```
+
+### Running Airflow Locally
+
+```bash
+# 1. Start the full stack (Airflow webserver + scheduler + PostgreSQL)
+cd airflow
+docker compose up -d
+
+# 2. Wait ~60 seconds, then open the UI
+#    http://localhost:8080  →  username: admin  /  password: admin
+
+# 3. Enable the DAG in the UI, then trigger it manually:
+docker compose exec airflow-scheduler \
+  airflow dags trigger music_retraining_weekly
+
+# 4. Watch each task turn green in the Graph View
+```
+
+### Key Design Decisions
+
+| Decision | Rationale |
+|---|---|
+| Weekly schedule (`@weekly`) | Balances freshness vs. training cost |
+| Validate before train | Fail fast — don't waste 5 min training on bad data |
+| Freshness check after train | Catches cases where `train.py` exits 0 but writes nothing |
+| Timestamped archives | Enables rollback without manual intervention |
+| `LocalExecutor` + PostgreSQL | Production-grade metadata store without Celery complexity |
+
+---
+
 ## How The Models Work
 
 ### 1. Collaborative Filtering (NMF) - Learns from User Behavior
@@ -319,7 +391,7 @@ Toggle between browsing from a curated list or searching by name. Results show s
 
 ## Future Improvements
 
-- [ ] Airflow pipeline for automated daily updates (coming this week!)
+- [x] Airflow pipeline for automated weekly retraining (v1.3)
 - [ ] A/B testing framework
 - [ ] Explicit feedback (likes/dislikes)
 - [ ] User onboarding flow
