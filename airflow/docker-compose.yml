@@ -18,7 +18,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-    AIRFLOW__CORE__FERNET_KEY: 'RHlvdV9zaG91bGRfY2hhbmdlX3RoaXNfa2V5X2luX3Byb2Q='
+    AIRFLOW__CORE__FERNET_KEY: 'ofkCXnqW_hzZ98Ftxd72hpwTwCDNQLVvPdb5PTNOuWk='
 
     # Metadata DB
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
