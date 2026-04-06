@@ -76,11 +76,15 @@ def load_and_split_data():
     train_matrix, user_map, song_map = loader.get_user_song_matrix()
     
     # Get song features
-    feature_cols = [
-        'acousticness_norm', 'danceability_norm', 'energy_norm',
-        'instrumentalness_norm', 'liveness_norm', 'speechiness_norm',
-        'valence_norm', 'tempo_norm'
-    ]
+    # feature_cols = [
+    #     'acousticness_norm', 'danceability_norm', 'energy_norm',
+    #     'instrumentalness_norm', 'liveness_norm', 'speechiness_norm',
+    #     'valence_norm', 'tempo_norm'
+    # ]
+   
+    # Use only the features we have
+    feature_cols = ['energy_norm', 'tempo_norm', 'valence_norm', 'danceability_norm']
+
     song_features = songs_df[feature_cols].values
     song_ids = songs_df['song_id'].values
     genres = songs_df['genre'].values

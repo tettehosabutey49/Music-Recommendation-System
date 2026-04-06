@@ -1,7 +1,6 @@
 # ============================================================================
 # TUTORIAL/GUIDE FILES - Exclude from repository
 # ============================================================================
-# These are learning materials, not part of the actual project
 QUICKSTART.md
 PART1_COMPLETE.md
 FILE_STRUCTURE.md
@@ -10,7 +9,6 @@ GIT_SETUP.md
 GIT_QUICK_REF.md
 setup.sh
 setup_files/
-# Keep README.md - that's your main professional documentation
 
 
 # ============================================================================
@@ -66,18 +64,30 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual environments
+# Virtual environments — ALL common names
 venv/
+venv*/
 env/
 ENV/
 env.bak/
 venv.bak/
+.venv/
+mrsenv/
+*env/
+*_env/
 
+
+# ============================================================================
+# TOOLS & EDITORS
+# ============================================================================
 # PyCharm
 .idea/
 
 # VS Code
 .vscode/
+
+# Claude Code (AI assistant local settings — not project files)
+.claude/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -112,9 +122,25 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+*.lnk
 
 # Linux
 *~
+
+
+# ============================================================================
+# SECRETS & ENVIRONMENT VARIABLES
+# ============================================================================
+# Never commit files with real credentials
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+credentials.json
 
 
 # ============================================================================
@@ -129,20 +155,31 @@ temp/
 .cache/
 cache/
 
-# Environment variables (if you add secrets later)
-.env
-.env.local
-
 # Experiment outputs
 experiments/
 results/
 
 
 # ============================================================================
-# KEEP THESE FILES (explicitly)
+# AIRFLOW
 # ============================================================================
-# These are important and should be committed
+# Task logs are large and machine-specific
+airflow/logs/*
+!airflow/logs/.gitkeep
+
+# Archive snapshots of trained models — too large to commit
+models/archive/
+
+# .env contains real API keys — NEVER commit it
+# Use airflow/.env.example as the template (that IS committed)
+airflow/.env
+
+
+# ============================================================================
+# KEEP THESE FILES (explicitly un-ignore)
+# ============================================================================
 !README.md
 !requirements.txt
 !src/
 !.gitignore
+!airflow/.env.example

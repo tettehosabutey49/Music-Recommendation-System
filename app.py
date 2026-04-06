@@ -212,17 +212,134 @@ def main():
     with tab2:
         st.header("Find Similar Songs")
         
-        song_options = list(song_map.keys())[:100]
-        selected_song = st.selectbox("Select Song:", song_options)
+        # Add search option
+        search_method = st.radio(
+            "How would you like to find a song?",
+            ["Browse from list", "Search by name"],
+            horizontal=True
+        )
+        
+        if search_method == "Browse from list":
+            # Original dropdown method
+            song_display_options = []
+            song_id_to_display = {}
+            
+            for song_id in list(song_map.keys())[:100]:
+                try:
+                    song = songs_df[songs_df['song_id'] == song_id].iloc[0]
+                    display_text = f"{song['title']} - {song['artist']}"
+                    song_display_options.append(display_text)
+                    song_id_to_display[display_text] = song_id
+                except:
+                    pass
+            
+            selected_display = st.selectbox("Select Song:", song_display_options)
+            selected_song = song_id_to_display[selected_display]
+        
+        else:
+            # Search method
+            search_query = st.text_input(
+                "Search for a song (by title or artist):",
+                placeholder="e.g., Travis Scott, SICKO MODE, Gunna..."
+            )
+            
+            if search_query:
+                # Search in songs
+                search_lower = search_query.lower()
+                matches = songs_df[
+                    songs_df['title'].str.lower().str.contains(search_lower, na=False) |
+                    songs_df['artist'].str.lower().str.contains(search_lower, na=False)
+                ]
+                
+                if len(matches) > 0:
+                    # Show matches as dropdown
+                    match_options = []
+                    match_id_map = {}
+                    
+                    for idx, row in matches.head(20).iterrows():  # Limit to top 20 results
+                        display_text = f"{row['title']} - {row['artist']}"
+                        match_options.append(display_text)
+                        match_id_map[display_text] = row['song_id']
+                    
+                    selected_display = st.selectbox(
+                        f"Found {len(matches)} matches - select one:",
+                        match_options
+                    )
+                    selected_song = match_id_map[selected_display]
+                else:
+                    st.warning(f"No songs found matching '{search_query}'. Try a different search term.")
+                    st.stop()
+            else:
+                st.info("👆 Enter a song title or artist name to search")
+                st.stop()
         
         if st.button("🔍 Find Similar", use_container_width=True):
-            similar = content.recommend_based_on_song(selected_song, top_k=10)
+            with st.spinner("Finding similar songs..."):
+                start_time = time.time()
+                
+                # Import libraries
+                from sklearn.metrics.pairwise import cosine_similarity
+                from sklearn.preprocessing import StandardScaler
+                import numpy as np
+                
+                # Feature columns
+                feature_cols = ['energy', 'tempo', 'valence', 'danceability']
+                
+                # Get data and normalize
+                features_df = songs_df[feature_cols].copy()
+                scaler = StandardScaler()
+                features_normalized = scaler.fit_transform(features_df)
+                
+                # Get selected song info
+                selected_row = songs_df[songs_df['song_id'] == selected_song].iloc[0]
+                selected_title_base = selected_row['title'].split(' (')[0]
+                selected_artist = selected_row['artist']
+                
+                # Get selected song index
+                selected_df_idx = songs_df[songs_df['song_id'] == selected_song].index[0]
+                selected_features = features_normalized[selected_df_idx].reshape(1, -1)
+                
+                # Calculate similarities
+                all_similarities = cosine_similarity(selected_features, features_normalized)[0]
+                
+                # Create list and filter
+                songs_with_sim = []
+                seen_titles = set()
+                
+                for df_idx in range(len(songs_df)):
+                    song = songs_df.iloc[df_idx]
+                    song_id = song['song_id']
+                    song_title_base = song['title'].split(' (')[0]
+                    sim = all_similarities[df_idx]
+                    
+                    # Skip selected song and its variations
+                    if (song_id == selected_song or 
+                        song_title_base == selected_title_base or
+                        song_title_base in seen_titles):
+                        continue
+                    
+                    seen_titles.add(song_title_base)
+                    songs_with_sim.append((df_idx, sim, song_id, song_title_base))
+                
+                # Sort by similarity
+                songs_with_sim.sort(key=lambda x: x[1], reverse=True)
+                
+                # Take top 10
+                similar = [(song_id, sim) for _, sim, song_id, _ in songs_with_sim[:10]]
+                
+                inference_time = (time.time() - start_time) * 1000
             
-            st.subheader("Similar Songs:")
+            st.success(f"✨ Found {len(similar)} similar songs in {inference_time:.0f}ms")
+            
+            st.subheader("🎵 Selected Song:")
+            selected_info = format_song_info(selected_song, songs_df)
+            st.markdown(f"### {selected_info}")
+            
+            st.subheader("🎯 Similar Songs:")
             for idx, (song_id, similarity) in enumerate(similar, 1):
                 song_info = format_song_info(song_id, songs_df)
                 st.markdown(f"{idx}. {song_info} - Similarity: {similarity:.3f}")
-    
+        
     with tab3:
         st.markdown("""
         ### About This System
